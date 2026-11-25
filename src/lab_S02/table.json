@@ -1,0 +1,20 @@
+{
+  "TableName": "AWSDevFiles",
+  "AttributeDefinitions": [
+    { "AttributeName": "ownerId", "AttributeType": "S" },
+    { "AttributeName": "uploadedAt", "AttributeType": "S" },
+    { "AttributeName": "fileKey", "AttributeType": "S" }
+  ],
+  "KeySchema": [
+    { "AttributeName": "ownerId", "KeyType": "HASH" },
+    { "AttributeName": "uploadedAt", "KeyType": "RANGE" }
+  ],
+  "BillingMode": "PAY_PER_REQUEST",
+  "GlobalSecondaryIndexes": [
+    {
+      "IndexName": "fileKey-index",
+      "KeySchema": [ { "AttributeName": "fileKey", "KeyType": "HASH" } ],
+      "Projection": { "ProjectionType": "ALL" }
+    }
+  ]
+}

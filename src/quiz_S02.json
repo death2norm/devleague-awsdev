@@ -1,0 +1,350 @@
+[
+ {
+  "title": "Archive read now and then",
+  "domain": "D1",
+  "objective": "1.3.1",
+  "stem": "A company must keep scanned contracts for one year. They are rarely opened, but when a lawyer asks for one it must open in the browser immediately. Which S3 storage class is the most cost-effective choice?",
+  "answers": [
+   [
+    "S3 Glacier Deep Archive",
+    false,
+    "Trap. Deep Archive is the cheapest to store, but a standard restore takes up to 12 hours, so the contract can't open immediately."
+   ],
+   [
+    "S3 Standard",
+    false,
+    "Standard works, but it charges the most to store data that is rarely read, so it isn't the most cost-effective choice."
+   ],
+   [
+    "S3 Glacier Instant Retrieval",
+    true,
+    "Correct. Instant Retrieval stores rarely accessed data cheaply and still returns it in milliseconds."
+   ],
+   [
+    "S3 Glacier Flexible Retrieval",
+    false,
+    "Flexible Retrieval needs a restore that takes minutes to hours before the object can be read."
+   ]
+  ]
+ },
+ {
+  "title": "Report deleted by mistake",
+  "domain": "D1",
+  "objective": "1.3.1",
+  "stem": "Versioning is enabled on an S3 bucket. A user runs aws s3 rm on a report without a version ID, and the report no longer appears in listings. How can the developer bring back the report?",
+  "answers": [
+   [
+    "Turn versioning off so the previous version becomes current",
+    false,
+    "Trap. Versioning can only be suspended, never turned off, and suspending it doesn't remove the delete marker."
+   ],
+   [
+    "Delete the delete marker that the rm command created",
+    true,
+    "Correct. The rm added a delete marker on top. Deleting the marker makes the most recent version current again."
+   ],
+   [
+    "Restore the report from S3 Glacier Flexible Retrieval",
+    false,
+    "Nothing was moved to Glacier. The data is still in the bucket as a noncurrent version."
+   ],
+   [
+    "Nothing can be done because the object was permanently deleted",
+    false,
+    "A delete without a version ID never erases data in a versioned bucket. It only adds a delete marker."
+   ]
+  ]
+ },
+ {
+  "title": "Nobody may delete early",
+  "domain": "D1",
+  "objective": "1.3.1",
+  "stem": "A regulator requires that audit files in S3 cannot be deleted or overwritten by anyone, including administrators and the root user, for five years. What should the developer configure?",
+  "answers": [
+   [
+    "S3 Object Lock in governance mode with a five-year retention period",
+    false,
+    "Trap. In governance mode, users with the s3:BypassGovernanceRetention permission can still delete or shorten the retention."
+   ],
+   [
+    "A lifecycle rule that expires the files after five years",
+    false,
+    "A lifecycle rule deletes files on schedule. It does nothing to stop someone from deleting them sooner."
+   ],
+   [
+    "A bucket policy that denies s3:DeleteObject to all IAM users",
+    false,
+    "The root user and anyone who can change the bucket policy can remove that statement, so it doesn't meet the requirement."
+   ],
+   [
+    "S3 Object Lock in compliance mode with a five-year retention period",
+    true,
+    "Correct. In compliance mode no one, including the root user, can delete a locked version or shorten its retention period."
+   ]
+  ]
+ },
+ {
+  "title": "Browser upload, no server hop",
+  "domain": "D2",
+  "objective": "2.1.4",
+  "stem": "A web application lets users upload videos of up to 2 GB. The developer wants the browser to send each file directly to a private S3 bucket without passing through the application servers and without giving users AWS credentials. Which approach meets these requirements with the least operational overhead?",
+  "answers": [
+   [
+    "Have the backend return a presigned PUT URL for each upload",
+    true,
+    "Correct. The backend signs one upload for one key with a short expiry, and the browser sends the file straight to S3."
+   ],
+   [
+    "Make the bucket public for writes and let the browser call PutObject",
+    false,
+    "Trap. A publicly writable bucket lets anyone on the internet upload anything, which is never acceptable."
+   ],
+   [
+    "Create an IAM user for each customer and email them access keys",
+    false,
+    "Long-term keys per customer are a security risk and a large amount of ongoing key management."
+   ],
+   [
+    "Stream each video through API Gateway to a Lambda function",
+    false,
+    "API Gateway caps a request at 10 MB and Lambda accepts only 6 MB synchronously, and this sends the file through servers."
+   ]
+  ]
+ },
+ {
+  "title": "Paid course videos",
+  "domain": "D2",
+  "objective": "2.1.4",
+  "stem": "A training company serves paid video courses through Amazon CloudFront from a private S3 bucket. Each course has hundreds of video segment files. Only signed-in, paying customers may watch, and the player's existing URLs must not change. What should the developer use?",
+  "answers": [
+   [
+    "S3 presigned URLs generated for every segment file",
+    false,
+    "Trap. That changes every URL the player uses and bypasses CloudFront, and the bucket should stay reachable only through CloudFront."
+   ],
+   [
+    "CloudFront signed cookies",
+    true,
+    "Correct. One signed cookie grants access to many files, such as every segment of a course, without changing their URLs."
+   ],
+   [
+    "A CloudFront signed URL for the course's first segment only",
+    false,
+    "A signed URL protects one file. The other segments would be unprotected or blocked."
+   ],
+   [
+    "A public bucket with long, random file names",
+    false,
+    "Hard-to-guess names are not access control. Anyone who gets a link can share it."
+   ]
+  ]
+ },
+ {
+  "title": "True about GSIs",
+  "domain": "D1",
+  "objective": "1.3.4",
+  "multi": true,
+  "stem": "A developer is deciding whether to add a global secondary index (GSI) to an existing DynamoDB table. Which two statements about GSIs are true? Choose two.",
+  "answers": [
+   [
+    "A GSI must use the same partition key as the base table",
+    false,
+    "Trap. That describes a local secondary index. A GSI can have its own partition key and sort key."
+   ],
+   [
+    "A GSI can be added to a table that already exists",
+    true,
+    "Correct. GSIs can be created or deleted at any time. A new one backfills existing items before it becomes ACTIVE."
+   ],
+   [
+    "A GSI supports strongly consistent reads when ConsistentRead is true",
+    false,
+    "GSIs are eventually consistent only. DynamoDB rejects a consistent read on a GSI with a ValidationException."
+   ],
+   [
+    "Reads from a GSI are eventually consistent",
+    true,
+    "Correct. DynamoDB updates a GSI from the table in the background, so a read can briefly miss a recent write."
+   ],
+   [
+    "A table can have at most one GSI",
+    false,
+    "The default quota is 20 GSIs per table."
+   ]
+  ]
+ },
+ {
+  "title": "Transactional read capacity",
+  "domain": "D1",
+  "objective": "1.3.4",
+  "stem": "A checkout service calls TransactGetItems to read 10 items in every second of peak traffic, and each item is 3 KB. How many read capacity units does the table need for these reads?",
+  "answers": [
+   [
+    "10",
+    false,
+    "Trap. That treats each read as a normal strongly consistent read. Transactional reads cost twice as much."
+   ],
+   [
+    "5",
+    false,
+    "Five would be the eventually consistent number. Transactions cost more, not less."
+   ],
+   [
+    "40",
+    false,
+    "Forty doubles twice. A 3 KB item is one 4 KB unit, and the transaction doubles it once."
+   ],
+   [
+    "20",
+    true,
+    "Correct. 3 KB rounds up to one 4 KB unit. Transactional reads cost 2 units each, so 10 reads per second need 20 RCUs."
+   ]
+  ]
+ },
+ {
+  "title": "Projection didn't cut the bill",
+  "domain": "D4",
+  "objective": "1.3.4",
+  "stem": "A developer adds a projection expression to a Query so that it returns only two small attributes from each 8 KB item. The response is much smaller, but the consumed read capacity doesn't change. Why?",
+  "answers": [
+   [
+    "Projection expressions only work on Scan operations",
+    false,
+    "Trap. Projection expressions work on Query, Scan and GetItem, and they did shrink the response here."
+   ],
+   [
+    "The Query must also set ConsistentRead to true",
+    false,
+    "Strongly consistent reads cost more, not less, so this would raise consumed capacity."
+   ],
+   [
+    "Capacity is based on the size of the items read, not the attributes returned",
+    true,
+    "Correct. DynamoDB reads the whole item and charges for it. Projection only trims what comes back over the network."
+   ],
+   [
+    "The table must be switched to provisioned capacity mode",
+    false,
+    "The capacity mode changes how you pay, not how many units a read of an 8 KB item uses."
+   ]
+  ]
+ },
+ {
+  "title": "Unique username",
+  "domain": "D1",
+  "objective": "1.3.4",
+  "stem": "A sign-up service stores users in a DynamoDB table with the partition key username. Two people sometimes try to register the same username at the same moment, and the second registration overwrites the first. What should the developer do?",
+  "answers": [
+   [
+    "Call GetItem first and skip the PutItem if the username exists",
+    false,
+    "Trap. Another request can write between the GetItem and the PutItem, so both sign-ups can still succeed."
+   ],
+   [
+    "Use a strongly consistent read before each PutItem",
+    false,
+    "A fresh read still leaves a gap before the write, so two requests can both see the name as free."
+   ],
+   [
+    "Add the condition attribute_not_exists(username) to the PutItem",
+    true,
+    "Correct. The condition is checked in the same step as the write, so the second request fails with ConditionalCheckFailedException."
+   ],
+   [
+    "Enable DynamoDB Streams and remove duplicates afterward",
+    false,
+    "By then the first user's data has already been overwritten, and both people were told they succeeded."
+   ]
+  ]
+ },
+ {
+  "title": "Lost edits",
+  "domain": "D1",
+  "objective": "1.3.4",
+  "stem": "Two support agents edit the same customer record in a DynamoDB table. Each item has a numeric version attribute. The developer updates with SET version = version + 1 and the condition version = :expected. One agent's save fails with ConditionalCheckFailedException. What should the application do?",
+  "answers": [
+   [
+    "Retry the same update with the same expected version",
+    false,
+    "Trap. The version has already changed, so the same condition fails every time."
+   ],
+   [
+    "Remove the condition so the save always succeeds",
+    false,
+    "That brings back the original problem: the second save silently overwrites the first agent's changes."
+   ],
+   [
+    "Switch the table to on-demand capacity",
+    false,
+    "The failure is a condition, not throttling, so capacity mode doesn't matter."
+   ],
+   [
+    "Read the item again, apply the agent's change to the new version, and retry",
+    true,
+    "Correct. This is optimistic locking: re-read, merge with the newer item, and write with the new expected version."
+   ]
+  ]
+ },
+ {
+  "title": "Before and after an update",
+  "domain": "D1",
+  "objective": "1.3.4",
+  "stem": "A developer enables DynamoDB Streams on an orders table. A Lambda function must compare each order's status before and after every update. Which stream view type should the developer choose?",
+  "answers": [
+   [
+    "NEW_AND_OLD_IMAGES",
+    true,
+    "Correct. Each record carries the item as it was before the change and as it is after."
+   ],
+   [
+    "NEW_IMAGE",
+    false,
+    "Trap. NEW_IMAGE shows the item only after the change, so there's nothing to compare it with."
+   ],
+   [
+    "KEYS_ONLY",
+    false,
+    "KEYS_ONLY carries only the key attributes, not the status."
+   ],
+   [
+    "OLD_IMAGE",
+    false,
+    "OLD_IMAGE shows only the item before the change."
+   ]
+  ]
+ },
+ {
+  "title": "True about presigned URLs",
+  "domain": "D2",
+  "objective": "2.1.4",
+  "multi": true,
+  "stem": "A developer creates S3 presigned GET URLs with the AWS SDK. Which two statements about these URLs are true? Choose two.",
+  "answers": [
+   [
+    "The person using the URL must sign in to AWS first",
+    false,
+    "Trap. The signature is in the URL, so the person using it needs no AWS credentials at all."
+   ],
+   [
+    "The URL can grant access the signer doesn't have",
+    false,
+    "A presigned URL carries the signer's permissions. If the signer can't read the object, the URL gets a 403."
+   ],
+   [
+    "Anyone who has the URL can use it until it expires",
+    true,
+    "Correct. There's no sign-in, so keep the expiry short and the action narrow."
+   ],
+   [
+    "The URL can be valid for up to 30 days",
+    false,
+    "With Signature Version 4 the maximum is 7 days."
+   ],
+   [
+    "A URL signed with temporary credentials stops working when they expire",
+    true,
+    "Correct. A presigned URL can't outlive the credentials that signed it, even if expiresIn is longer."
+   ]
+  ]
+ }
+]
