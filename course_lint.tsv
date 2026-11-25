@@ -1,0 +1,6 @@
+# pattern<TAB>message<TAB>files allowed to contain it (regex on file name). Checked by tools/checks.py in every session file.
+77 of 90|of 90\b	CompTIA wording: this course's voucher bar is 56 of 65 (proposed, Nov 25)	x^
+\b86 ?%|eighty-six percent	write the voucher bar as 56 of 65, not a percentage	_S12\.|moodle_bank
+DVA-C02	the course targets DVA-C03 (DVA-C02 retired after Nov 30, 2026); mention C02 only to say it retired	_S00\.|_S12\.
+CodeCommit	confirm CodeCommit availability for new accounts before teaching it; labs use GitHub	x^
+Amazon Q Developer	out of scope for DVA-C03 (removed); AI coding examples use Kiro	x^
