@@ -1,0 +1,350 @@
+[
+ {
+  "title": "Credentials for a container",
+  "domain": "D2",
+  "objective": "2.1.3",
+  "stem": "A Node.js application runs as a task on Amazon ECS and must write objects to one S3 bucket. The company wants each task to have only the permissions it needs and does not allow long-term access keys. How should the application get credentials?",
+  "answers": [
+   [
+    "Put an access key in the Dockerfile as environment variables",
+    false,
+    "Trap. That bakes a long-term key into the image, where anyone who pulls the image can read it, and the company doesn't allow long-term keys."
+   ],
+   [
+    "Run aws configure while building the container image",
+    false,
+    "aws configure writes a long-term access key into a credentials file inside the image, which breaks the no-long-term-keys rule."
+   ],
+   [
+    "Give the ECS task an IAM task role with access to the bucket",
+    true,
+    "Correct. The task role's temporary credentials reach the SDK through the container credentials endpoint, and each task gets only that role's permissions."
+   ],
+   [
+    "Rely on the EC2 host's instance role for every task on the host",
+    false,
+    "That gives every task on the host the same permissions, which breaks the per-task least-privilege requirement."
+   ]
+  ]
+ },
+ {
+  "title": "Just the account number",
+  "domain": "D1",
+  "objective": "1.1.5",
+  "stem": "A shell script needs to store only the 12-digit account ID of the current credentials in a variable. Which command returns exactly that value?",
+  "answers": [
+   [
+    "aws sts get-caller-identity --output table",
+    false,
+    "Trap. A table is easier for a person to read, but it still prints the user ID and ARN along with the account, plus borders."
+   ],
+   [
+    "aws sts get-caller-identity --query Account --output text",
+    true,
+    "Correct. --query picks the Account field and --output text prints it without JSON quotes."
+   ],
+   [
+    "aws sts get-caller-identity --filter Account --output json",
+    false,
+    "The CLI filters output with --query. --filter isn't an option for this command."
+   ],
+   [
+    "aws iam get-user --query Account --output text",
+    false,
+    "get-user describes an IAM user and has no Account field, and it fails for role credentials such as CloudShell or EC2."
+   ]
+  ]
+ },
+ {
+  "title": "New secret, new error",
+  "domain": "D2",
+  "objective": "2.1.5",
+  "stem": "A developer pastes a newly created secret access key into a CI system's settings. Every AWS call from the CI job now fails with SignatureDoesNotMatch. The access key ID is correct, and the CI server's clock is accurate. What is the most likely cause?",
+  "answers": [
+   [
+    "The CI server's clock is out of sync with AWS",
+    false,
+    "Trap. Clock problems say the time is skewed or the request expired, and the question says the clock is accurate."
+   ],
+   [
+    "The IAM user is missing permissions for the API calls the job makes",
+    false,
+    "Missing permissions return AccessDenied. A signature mismatch happens before AWS even checks permissions."
+   ],
+   [
+    "The secret key stored in the CI settings is wrong",
+    true,
+    "Correct. AWS repeats the signing math with its copy of the secret. A secret with a typo or an extra space produces a different signature."
+   ],
+   [
+    "The CI job is calling an endpoint in the wrong Region",
+    false,
+    "A wrong Region gives an error that names the expected Region or endpoint, not a signature mismatch."
+   ]
+  ]
+ },
+ {
+  "title": "Throttled batch job",
+  "domain": "D1",
+  "objective": "1.1.3",
+  "multi": true,
+  "stem": "A batch job that uses the SDK for JavaScript version three receives frequent ThrottlingException errors when many workers run at once. The developer wants the job to finish reliably with the least custom code. Which two actions should the developer take? Choose two.",
+  "answers": [
+   [
+    "Wrap each call in a loop that retries immediately until it succeeds",
+    false,
+    "Trap. Immediate retries from many workers keep the rate high and make throttling worse."
+   ],
+   [
+    "Set the client's retryMode to adaptive",
+    true,
+    "Correct. Adaptive mode adds client-side rate limiting on top of backoff with jitter, which slows callers down when the service throttles."
+   ],
+   [
+    "Set maxAttempts to 1 so throttled requests fail quickly",
+    false,
+    "One attempt means no retries at all, so every throttled request becomes a failure."
+   ],
+   [
+    "Increase maxAttempts on the SDK client",
+    true,
+    "Correct. More attempts give the built-in exponential backoff with jitter more chances to get through, with no custom code."
+   ],
+   [
+    "Send each throttled request to a different Region's endpoint",
+    false,
+    "Resources such as tables live in one Region, so the other endpoint doesn't have the data, and this is custom code."
+   ]
+  ]
+ },
+ {
+  "title": "Table not ready",
+  "domain": "D1",
+  "objective": "1.1.5",
+  "stem": "A setup script creates a DynamoDB table and then writes the first item. The write sometimes fails with ResourceNotFoundException. What is the most reliable fix?",
+  "answers": [
+   [
+    "Add a fixed five-second pause before the first write",
+    false,
+    "Trap. Sometimes five seconds is too short and sometimes it wastes time. A fixed pause guesses instead of checking."
+   ],
+   [
+    "Use the waitUntilTableExists waiter before writing",
+    true,
+    "Correct. The waiter checks the table's status until it's ready, then the script continues."
+   ],
+   [
+    "Retry the write with maxAttempts set to 10",
+    false,
+    "ResourceNotFoundException isn't an error the SDK retries, so raising maxAttempts doesn't keep trying."
+   ],
+   [
+    "Create a copy of the table in a second Region at the same time",
+    false,
+    "A table in another Region doesn't make the first table ready any sooner."
+   ]
+  ]
+ },
+ {
+  "title": "Slow recommendations",
+  "domain": "D1",
+  "objective": "1.1.3",
+  "stem": "A product page calls a separate recommendation service. When that service is slow, the whole page takes 30 seconds to load or fails. Recommendations are useful but not required. What should the developer do?",
+  "answers": [
+   [
+    "Raise the call's timeout to 60 seconds so it always finishes",
+    false,
+    "Trap. A longer timeout makes the page wait even longer for an optional feature."
+   ],
+   [
+    "Remove retries from every call the page makes to other services",
+    false,
+    "Retries aren't the problem here, and removing them makes the required calls less reliable."
+   ],
+   [
+    "Move the recommendation service to a larger instance type",
+    false,
+    "That might make it faster sometimes, but the page still breaks whenever the service is slow or down."
+   ],
+   [
+    "Use a short timeout and show default content on failure",
+    true,
+    "Correct. That's graceful degradation: the important part of the page works even when an optional dependency doesn't."
+   ]
+  ]
+ },
+ {
+  "title": "Reading the body",
+  "domain": "D1",
+  "objective": "1.1.7",
+  "stem": "A developer uses the SDK for JavaScript version three to download a JSON object with GetObjectCommand. Passing the response's Body directly to JSON.parse throws an error. What should the developer do?",
+  "answers": [
+   [
+    "Store the object as base64 so JSON.parse can read it",
+    false,
+    "Trap. Base64 is an encoding for putting binary data into text. It doesn't change the fact that Body is a stream."
+   ],
+   [
+    "Read the Body with transformToString, then parse the text",
+    true,
+    "Correct. In version three the Body is a stream. transformToString reads it into text, which JSON.parse can turn into an object."
+   ],
+   [
+    "Set ContentType to application/json on the GetObject call",
+    false,
+    "The content type describes the object. Setting it doesn't turn the stream into text."
+   ],
+   [
+    "Call JSON.stringify on the Body before calling JSON.parse",
+    false,
+    "Stringifying a stream object gives you text that describes the stream, not the file's contents."
+   ]
+  ]
+ },
+ {
+  "title": "Spec before code",
+  "domain": "D1",
+  "objective": "1.1.9",
+  "stem": "A team adopts Kiro and uses spec-driven development for a new feature. At what point does the developer get the best chance to catch a missing requirement?",
+  "answers": [
+   [
+    "After the feature is deployed, by reading production logs",
+    false,
+    "Trap. Logs show what went wrong after users hit it. The point of a spec is to catch gaps before any code exists."
+   ],
+   [
+    "When the assistant generates the first version of the code",
+    false,
+    "By then the missing requirement is already missing from the code. Fixing it means regenerating or rewriting."
+   ],
+   [
+    "When reviewing the requirements, design and tasks",
+    true,
+    "Correct. The spec turns the request into written requirements, a design and tasks the developer can edit before any code is generated."
+   ],
+   [
+    "Only during the code review of the final pull request for the feature",
+    false,
+    "Code review is still needed, but it's a late, expensive place to find a requirement nobody wrote down."
+   ]
+  ]
+ },
+ {
+  "title": "Temporary credentials",
+  "domain": "D2",
+  "objective": "2.1.3",
+  "multi": true,
+  "stem": "Which two statements about temporary credentials issued by AWS STS are true? Choose two.",
+  "answers": [
+   [
+    "Their access key IDs begin with AKIA, like IAM user keys",
+    false,
+    "Trap. AKIA is the usual start of a long-term IAM user key. Temporary access key IDs usually start with ASIA."
+   ],
+   [
+    "They include a session token in addition to the access key ID and secret",
+    true,
+    "Correct. Calls made with temporary credentials must include the session token."
+   ],
+   [
+    "They must be created by hand in the IAM console",
+    false,
+    "STS issues them through API calls such as AssumeRole, and services like EC2 and Lambda request them for you."
+   ],
+   [
+    "They expire automatically after a set duration",
+    true,
+    "Correct. That's what limits the damage if they leak."
+   ],
+   [
+    "They work only from inside EC2 instances",
+    false,
+    "They work from anywhere: a laptop, CloudShell, Lambda, a container or an EC2 instance."
+   ]
+  ]
+ },
+ {
+  "title": "Safe to repeat",
+  "domain": "D1",
+  "objective": "1.1.3",
+  "stem": "A developer is deciding which operations can be retried safely without an idempotency key. Which operation is idempotent? (The S3 bucket does not use versioning.)",
+  "answers": [
+   [
+    "Adding 10 to a customer's reward points balance",
+    false,
+    "Trap. Each retry adds another 10, so doing it twice isn't the same as doing it once."
+   ],
+   [
+    "Uploading the same file to the same S3 key",
+    true,
+    "Correct. Writing the same content to the same key twice leaves the same object as writing it once."
+   ],
+   [
+    "Sending a welcome email to a new customer",
+    false,
+    "Each retry sends another email, so the customer can get duplicates."
+   ],
+   [
+    "Appending an order line to a log file",
+    false,
+    "Each retry appends another line, so the log ends up with duplicates."
+   ]
+  ]
+ },
+ {
+  "title": "Role ignored",
+  "domain": "D2",
+  "objective": "2.1.3",
+  "stem": "An application on an EC2 instance gets AccessDenied when it reads from S3, even though the instance role allows it. The application's process has AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY set for an IAM user with no S3 permissions. What should the developer do?",
+  "answers": [
+   [
+    "Add more S3 permissions to the instance role",
+    false,
+    "Trap. The role already allows the read. The SDK never uses the role, because the environment variables are found first."
+   ],
+   [
+    "Remove the access key environment variables from the process",
+    true,
+    "Correct. Environment variables come first in the credential provider chain. Without them, the SDK reaches the instance metadata service and uses the role."
+   ],
+   [
+    "Increase maxAttempts on the S3 client so the call is retried",
+    false,
+    "AccessDenied isn't retried, and retrying with the same credentials gives the same answer."
+   ],
+   [
+    "Set the AWS_REGION variable to the Region of the instance role",
+    false,
+    "AWS_REGION only sets the Region the SDK sends requests to. It doesn't choose credentials, and the role has no Region."
+   ]
+  ]
+ },
+ {
+  "title": "Wrong Region",
+  "domain": "D1",
+  "objective": "1.1.5",
+  "stem": "A script lists objects in a bucket and fails with an error saying the bucket must be addressed using the specified endpoint. The same IAM user can list the bucket in the console. What should the developer change?",
+  "answers": [
+   [
+    "Attach a policy that grants s3:ListBucket to the user",
+    false,
+    "Trap. The user can already list the bucket in the console, and a permissions failure would say AccessDenied."
+   ],
+   [
+    "Rename the bucket so its name is unique",
+    false,
+    "Bucket names are already unique across AWS. Renaming isn't possible, and the name isn't the problem."
+   ],
+   [
+    "Turn on versioning for the bucket and retry the listing",
+    false,
+    "Versioning keeps old copies of objects. It has nothing to do with where requests are sent."
+   ],
+   [
+    "Set the client's Region to the bucket's Region",
+    true,
+    "Correct. The SDK builds the endpoint from the client's Region, and the error says the request went to the wrong one."
+   ]
+  ]
+ }
+]
