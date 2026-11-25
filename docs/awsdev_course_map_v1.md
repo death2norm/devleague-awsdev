@@ -1,6 +1,6 @@
 # DevLeague AWS Developer (DVA-C03) · Course Map v1.0 (draft, Nov 25, 2026)
 
-*Built from the shared kit (Production Standard v5) and the agenda in the project doc `claude/alfred_courses_pdf/plan.html`. Same night model, script rules, file set and QA gates as Security+ and Network+; only the values below change. Status: Week 1 and Week 2 specs reviewed (v2); waiting for Josh's approval. Session 12 timing set in course.env. Weeks 2–4 are listed in section 3 and get full specs one week at a time.*
+*Built from the shared kit (Production Standard v5) and the agenda in the project doc `claude/alfred_courses_pdf/plan.html`. Same night model, script rules, file set and QA gates as Security+ and Network+; only the values below change. Status: Week 1 and Week 2 specs reviewed (v2) and approved by Josh Nov 25; Sessions 1–3 ready to build. Session 12 timing set in course.env. Weeks 2–4 are listed in section 3 and get full specs one week at a time.*
 
 ## 1. Course constants
 
@@ -13,7 +13,7 @@
 | Pace | 130 wpm |
 | Schedule | 3 sessions a week, **12 sessions over 4 weeks**, 1-hour Week 0 orientation |
 | Cohort | 20–30, breakout groups of 4–5, TA co-host |
-| Voucher | **56 of 65** on Practice Exam B, C or D (proposed Nov 25, same 86% as 77 of 90; Josh to confirm). Go by the 56 |
+| Voucher | **55 of 65** on Practice Exam B, C or D (Josh's decision, Nov 25: a rounder number, slightly below the 85–86% used on the CompTIA courses). Go by the 55 |
 | Voucher cost | $150 (budget a second attempt for about 35% of students). Whether AWS lets DevLeague include the exam in its price is unconfirmed (Josh) |
 | LMS | learn.devleague.com, Moodle 4.5, Moove theme. New course shell copied from course 43's structure |
 | Code language | JavaScript (Node.js 22) with AWS SDK for JavaScript v3. The exam is language-neutral; scripts say so once in Session 1 |
@@ -65,7 +65,7 @@ Nightly quiz 10 (12 where coverage needs it), including at least two multiple-re
 
 Per session: S1 D1 20 D2 10 · S2 D1 22 D2 8 · S3 D1 25 D3 3 D4 2 · S4 D1 25 D3 5 · S5 D1 8 D4 22 · S6 D2 30 · S7 D2 30 · S8 D3 30 · S9 D3 30 · S10 D4 30 · S11 D2 7 D3 3 D4 15.
 
-## 8. Week 1 specs (v2, reviewed Nov 25; for Josh's approval)
+## 8. Week 1 specs (v2, approved Nov 25)
 
 *v2 applies the independent review of Nov 25: Lambda credential answer, retry demo, presigned-URL checksum setting, table kept for Session 3, faster failure destination, fewer blocks on L nights, CloudFront signed URLs, and the Lambda limits below. Every lab ships starter scripts and JSON files so the minutes hold.*
 
@@ -90,7 +90,7 @@ Per session: S1 D1 20 D2 10 · S2 D1 22 D2 8 · S3 D1 25 D3 3 D4 2 · S4 D1 25 D
 - **Break 1** after Block 6. **Callbacks:** Session 1 execution role, credentials from environment variables and retries; Session 2 S3 events and the table. **Practice bank:** D1 25, D3 3, D4 2.
 - **Exam terms:** execution environment, cold start, handler, event object, context object, timeout, ephemeral storage, environment variable, synchronous invocation, asynchronous invocation, event source mapping, execution role, resource-based policy, destination, dead-letter queue, redrive policy, maximum event age, partial batch response, reserved concurrency, provisioned concurrency, throttling, runtime, layer, extension, deployment package, container image, ENI, VPC endpoint, gateway endpoint, NAT gateway, version, alias.
 
-## 8a. Course overrides of the kit standard (approved with this map)
+## 8a. Course overrides of the kit standard (approved Nov 25)
 1. **Bank:** 30 per content session (Sessions 1–10) and 25 for Session 11, instead of 25 each, so four sealed 65-item pools have spares (Domain 4 has only about 13 spare: if reviews cut more Domain 4 items, write replacements).
 2. **Labs:** CloudShell in the student's own AWS account, not TryHackMe or Packet Tracer. The TryHackMe room check is replaced by the platform check in section 1 (a person runs each week's labs in a new free-plan account before scripts are written). Tickets that can't be reproduced in a free account stay on paper.
 3. **Session 12** is the course's final session (kit default is 18): builder and timing need a course override.
@@ -98,7 +98,7 @@ Per session: S1 D1 20 D2 10 · S2 D1 22 D2 8 · S3 D1 25 D3 3 D4 2 · S4 D1 25 D
 5. **Practice Exam A** comes before Session 10, so it's diagnostic only for Domain 4.
 6. **Extra time:** AWS gives approved non-native English speakers 30 extra minutes; mirror that with Moodle user overrides.
 
-## 9. Week 2 specs (v2, reviewed Nov 25; for Josh's approval)
+## 9. Week 2 specs (v2, approved Nov 25)
 
 *Checked Nov 25: SQS's maximum message size is 1 MiB (raised from 256 KiB on Aug 4, 2025, for standard and FIFO queues, with Lambda's SQS event source mapping updated to match); asynchronous Lambda invocations also accept up to 1 MB; SNS topics can be set to 1 MiB with the MaximumMessageSize attribute. Older study material still says 256 KB, so scripts teach the new limits and name the old one as a trap. v2 applies the independent review of Nov 25: REST-only vs HTTP-only features, CORS, stage variables, Step Functions and SQS numbers, DAX and SnapStart corrections, named AI optimization tools, workable Cognito and assume-role lab steps, and the free plan's service list (DAX, Kinesis, Data Firehose and Access Analyzer policy generation stay on paper).*
 
