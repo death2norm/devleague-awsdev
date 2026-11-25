@@ -42,7 +42,7 @@ See `docs/objectives_DVA-C03.md`. Practice exams draw **20 / 17 / 14 / 14** by d
 | 11 | Review by Weight + Multiple-Response Workshop | All | M | Group scenario rounds; Practice Exam A weak spots |
 | 12 | Timed Practice Exam B + Readiness | All | Special | Moodle practice exam |
 
-**Session 12 timing (special, needs a kit change):** briefing 10 · Practice Exam B 130 min (20/17/14/14, camera on) · break 10 · review 25 · close 5. Kit updated Nov 25: `build_s18.sh` and `s18_timing.py` read FINAL_SESSION, EXAM_MIN, BRIEF_MIN, REVIEW_MIN, CLOSE_MIN and CLINICS from course.env (set here to 12, 130, 10, 25, 5, 4).
+**Session 12 timing (special):** briefing 10 · Practice Exam B 130 min (20/17/14/14, camera on) · break 10 · review 25 · close 5. Kit updated Nov 25: `build_s18.sh` and `s18_timing.py` read FINAL_SESSION, EXAM_MIN, BRIEF_MIN, REVIEW_MIN, CLOSE_MIN and CLINICS from course.env (set here to 12, 130, 10, 25, 5, 4).
 
 ## 4. Settled
 1. 12 sessions over 4 weeks (Nov 25 proposal). Moodle course has 14 sections: Start Here, Sessions 01–12, Practice Exams, Course Resources (adjust the playbook's 20-section layout).
